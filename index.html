@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Index.html</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Share Tech Mono', monospace;
+    background: #080c14;
+    color: #c8d8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ─── Orbs ─── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: orbFloat linear infinite;
+  }
+  .orb-1 {
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(99,102,241,0.55) 0%, transparent 70%);
+    top: -120px; left: -100px;
+    animation-duration: 18s;
+  }
+  .orb-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(14,165,233,0.45) 0%, transparent 70%);
+    bottom: -160px; right: -130px;
+    animation-duration: 24s;
+    animation-direction: reverse;
+  }
+  .orb-3 {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%);
+    top: 50%; left: 60%;
+    animation-duration: 20s;
+    animation-delay: -6s;
+  }
+  .orb-4 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(6,182,212,0.38) 0%, transparent 70%);
+    top: 30%; left: -80px;
+    animation-duration: 15s;
+    animation-delay: -10s;
+  }
+  @keyframes orbFloat {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    25%  { transform: translate(30px, -20px) scale(1.04); }
+    50%  { transform: translate(15px, 30px) scale(0.97); }
+    75%  { transform: translate(-20px, 10px) scale(1.02); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+
+  /* ─── Scanlines ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 1;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(100,140,255,0.015) 2px, rgba(100,140,255,0.015) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* ─── Corner HUD brackets ─── */
+  .corner { position: fixed; width: 60px; height: 60px; z-index: 2; pointer-events: none; }
+  .corner::before, .corner::after {
+    content: ''; position: absolute;
+    background: rgba(99,148,255,0.6);
+    border-radius: 1px;
+    box-shadow: 0 0 8px rgba(99,148,255,0.6);
+  }
+  .corner::before { width: 2px; height: 100%; top: 0; }
+  .corner::after  { width: 100%; height: 2px; top: 0; }
+  .corner.tl { top: 18px; left: 18px; }
+  .corner.tr { top: 18px; right: 18px; transform: scaleX(-1); }
+  .corner.bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
+  .corner.br { bottom: 18px; right: 18px; transform: scale(-1); }
+
+  /* ─── Header ─── */
+  header {
+    position: fixed; top: 26px; left: 50%; transform: translateX(-50%);
+    z-index: 10;
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: rgba(140,180,255,0.7);
+    animation: fadeDown 1s ease both;
+  }
+
+  /* ─── Status bar ─── */
+  .status-bar {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; gap: 24px;
+    font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(140,180,255,0.45);
+    animation: fadeUp 1.2s ease both;
+  }
+  .status-bar span { display: flex; align-items: center; gap: 6px; }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #22d3ee; box-shadow: 0 0 7px #22d3ee;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  /* ─── Glass card ─── */
+  .card {
+    position: relative; z-index: 5;
+    padding: 52px 64px 48px;
+    background: rgba(12, 20, 40, 0.38);
+    border: 1px solid rgba(120,160,255,0.15);
+    border-radius: 6px;
+    backdrop-filter: blur(28px) saturate(140%) brightness(1.08);
+    -webkit-backdrop-filter: blur(28px) saturate(140%) brightness(1.08);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 40px 100px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.09),
+      inset 0 -1px 0 rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 660px; width: 90vw;
+    animation: cardReveal 1.1s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+  }
+
+  /* Top shimmer edge */
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(140,180,255,0.55), rgba(168,130,255,0.55), transparent);
+  }
+
+  /* ─── Tag ─── */
+  .tag {
+    font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: rgba(130,170,255,0.65);
+    margin-bottom: 16px;
+    opacity: 0; animation: fadeIn 0.6s ease 0.9s both;
+  }
+
+  /* ─── Title ─── */
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.2rem, 8vw, 3.8rem);
+    font-weight: 900;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    margin-bottom: 26px;
+    background: linear-gradient(135deg, #e0ecff 0%, #a5c8ff 40%, #c4b5fd 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 22px rgba(130,170,255,0.35));
+    opacity: 0; animation: fadeIn 0.8s ease 0.5s both;
+  }
+
+  /* ─── Divider ─── */
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(120,160,255,0.2), transparent);
+    margin-bottom: 26px;
+    opacity: 0; animation: fadeIn 0.6s ease 1s both;
+  }
+
+  /* ─── Typewriter ─── */
+  .typewriter {
+    font-size: 0.9rem; line-height: 1.8;
+    color: rgba(180,200,240,0.65);
+    min-height: 1.8em;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; animation: fadeIn 0.01s ease 1.3s both;
+  }
+  .cursor {
+    display: inline-block; width: 2px; height: 0.95em;
+    background: rgba(130,170,255,0.85);
+    margin-left: 2px; vertical-align: middle;
+    animation: cursorBlink 0.85s step-end infinite;
+    box-shadow: 0 0 6px rgba(130,170,255,0.7);
+  }
+
+  /* ─── Uptime ─── */
+  .uptime-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin-top: 34px;
+    opacity: 0; animation: fadeUp 0.8s ease 1.8s both;
+  }
+  .uptime-label {
+    font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: rgba(140,160,200,0.45);
+  }
+  .uptime-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: rgba(150,200,255,0.85);
+    text-shadow: 0 0 10px rgba(100,180,255,0.45);
+  }
+
+  /* ─── Keyframes ─── */
+  @keyframes fadeIn   { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(22px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+  @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <header id="el-header"></header>
+
+  <main>
+    <div class="card">
+      <p class="tag" id="el-tag"></p>
+      <h1 id="el-title"></h1>
+      <div class="divider"></div>
+      <p class="typewriter">
+        <span id="el-typewriter"></span><span class="cursor"></span>
+      </p>
+      <div class="uptime-row">
+        <span class="uptime-label">Uptime</span>
+        <span class="uptime-val" id="el-uptime">00:00:00</span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="status-bar" id="el-statusbar"></footer>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ✏️  EDITABLE CONFIG — change anything here
+   ═══════════════════════════════════════════════ */
+const CONFIG = {
+
+  // ── Top header text ──────────────────────────
+  header: "📍 System Online 📍",
+
+  // ── Small tag above the title ────────────────
+  tag: "⟨ Server Instance ⟩",
+
+  // ── Main title ───────────────────────────────
+  title: "NGINX_V1",
+
+  // ── Typewriter phrases (cycles automatically) ─
+  phrases: [  
+  "Hey Welcome" ,
+  "By Dev Jayanth ❤️",
+  ],
+
+  // ── Bottom status bar items ───────────────────
+  statusItems: [
+    { dot: true,  label: "SYS NOMINAL" },
+    { dot: false, label: "IPV6 READY"  },
+    { dot: false, label: "TLS 1.3"     },
+    { dot: false, label: "HTTP/3"      },
+  ],
+
+};
+/* ═══════════════════════════════════════════════
+   END OF EDITABLE CONFIG
+   ═══════════════════════════════════════════════ */
+
+
+
+
+/* ── Populate static text ── */
+document.getElementById('el-header').textContent    = CONFIG.header;
+document.getElementById('el-tag').textContent       = CONFIG.tag;
+document.getElementById('el-title').textContent     = CONFIG.title;
+
+const sb = document.getElementById('el-statusbar');
+CONFIG.statusItems.forEach(item => {
+  const s = document.createElement('span');
+  if (item.dot) { const d = document.createElement('span'); d.className = 'dot'; s.appendChild(d); }
+  s.appendChild(document.createTextNode(' ' + item.label));
+  sb.appendChild(s);
+});
+
+/* ── Typewriter ── */
+let pi = 0, ci = 0, deleting = false;
+const tw = document.getElementById('el-typewriter');
+function typeStep() {
+  const phrase = CONFIG.phrases[pi];
+  if (!deleting) {
+    tw.textContent = phrase.slice(0, ++ci);
+    if (ci === phrase.length) { deleting = true; setTimeout(typeStep, 2400); return; }
+    setTimeout(typeStep, 48);
+  } else {
+    tw.textContent = phrase.slice(0, --ci);
+    if (ci === 0) { deleting = false; pi = (pi + 1) % CONFIG.phrases.length; setTimeout(typeStep, 400); return; }
+    setTimeout(typeStep, 24);
+  }
+}
+setTimeout(typeStep, 1500);
+
+/* ── Uptime ── */
+const start = Date.now();
+setInterval(() => {
+  const s = Math.floor((Date.now() - start) / 1000);
+  const h = String(Math.floor(s / 3600)).padStart(2,'0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2,'0');
+  const ss = String(s % 60).padStart(2,'0');
+  document.getElementById('el-uptime').textContent = `${h}:${m}:${ss}`;
+}, 1000);
+</script>
+</body>
+</html>
