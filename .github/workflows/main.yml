@@ -1,4 +1,4 @@
-name: Deploy Website
+name: Deploy Application
 
 on:
   push:
@@ -7,29 +7,30 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Create PEM File
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
+          chmod 400 key.pem
 
-    - name: Configure SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
-        chmod 600 ~/.ssh/ec2.pem
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Copy index.html to App Server
+        run: |
+          scp -o StrictHostKeyChecking=no \
+          -i key.pem \
+          index.html \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/tmp/
 
-    - name: Copy Files to EC2
-      run: |
-        scp -i ~/.ssh/ec2.pem -r * \
-        ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/tmp/
+      - name: Deploy to Nginx
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+          -i key.pem \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
 
-    - name: Deploy Website
-      run: |
-        ssh -i ~/.ssh/ec2.pem \
-        ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-          sudo cp -r /tmp/* /var/www/html/
-          sudo systemctl restart nginx
-        EOF
+          sudo cp /tmp/index.html /var/www/html/index.html
+
+          EOF
